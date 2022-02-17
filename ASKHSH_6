@@ -1,0 +1,81 @@
+import random as r
+
+w_score = 0
+b_score = 0
+
+for _ in range(100):
+    grid = [[0 for _ in range(8)] for _ in range(8)]
+
+    x_t = r.randint(0, len(grid)-1)
+    y_t = r.randint(0, len(grid)-1)
+    grid[x_t][y_t] = 1
+
+    x_b = r.randint(0, len(grid)-1)
+    y_b = r.randint(0, len(grid)-1)
+    while x_b == x_t and y_b == y_t:
+        x_b = r.randint(0, len(grid)-1)
+        y_b = r.randint(0, len(grid)-1)
+
+    grid[x_b][y_b] = 2
+
+    x_q = r.randint(0, len(grid)-1)
+    y_q = r.randint(0, len(grid)-1)
+    while (x_q == x_t and y_q == y_t) and (x_q == x_b and y_q == y_b):
+        x_q = r.randint(0, len(grid)-1)
+        y_q = r.randint(0, len(grid)-1)
+
+    grid[x_q][y_q] = 3
+
+    # Check if tower hits
+    t_hits = 0
+    b_hits = 0
+    q_hits = 0
+    for row in grid:
+        if 1 in row and 3 in row:
+            t_hits = 1
+
+    for column in list(zip(*grid)):
+        if 1 in column and 3 in column:
+            t_hits = 1
+
+    # Check if bishop hits
+    diag_coords_b = []
+    for i in range(len(grid)):
+        if x_b + i <= len(grid) - 1 and y_b + i <= len(grid) - 1:
+            diag_coords_b.append([x_b+i, y_b+i])
+        if x_b - i >= 0 and y_b - i >= 0:
+            diag_coords_b.append([x_b-i, y_b-i])
+
+    if [x_q, y_q] in diag_coords_b:
+        b_hits = 1
+
+    # Check if queen hits
+    for row in grid:
+        if 1 in row and 3 in row:
+            q_hits += 1
+        if 2 in row and 3 in row:
+            q_hits += 1
+
+    for column in list(zip(*grid)):
+        if 1 in column and 3 in column:
+            q_hits += 1
+        if 2 in column and 3 in column:
+            q_hits += 1
+
+    diag_coords_q = []
+    for i in range(len(grid)):
+        if x_q + i <= len(grid) - 1 and y_q + i <= len(grid) - 1:
+            diag_coords_q.append([x_q+i, y_q+i])
+        if x_q - i >= 0 and y_q - i >= 0:
+            diag_coords_q.append([x_q-i, y_q-i])
+
+    if [x_t, y_t] in diag_coords_q:
+        q_hits += 1
+    if [x_b, y_b] in diag_coords_q:
+        q_hits += 1
+
+    w_score += t_hits + b_hits
+    b_score += q_hits
+
+print("White side player", w_score)
+print("Black side player", b_score)
